@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:17.5
+    ports:
+      - '8081:5432'
+    environment:
+      - POSTGRES_USER=project
+      - POSTGRES_PASSWORD=project
+      - POSTGRES_DB=gymapi
+    volumes:
+      - gymapi:/var/lib/postgresql/data
+
+  api:
+    build: .
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    ports:
+      - '8080:8080'
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=project
+      - DB_PASSWORD=project
+      - DB_NAME=gymapi
+      - DB_PORT=5432
+      - DB_TIMEZONE=America/Sao_Paulo
+
+volumes:
+  gymapi:
