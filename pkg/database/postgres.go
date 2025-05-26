@@ -21,3 +21,7 @@ func ConnectPostgres(cfg config.Env) {
 
 	DB = db
 }
+
+func AutoMigrate(models ...interface{}) {
+	DB.AutoMigrate(models...)
+}
