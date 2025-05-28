@@ -1,6 +1,12 @@
 package user
 
-type CreateUserParams struct {
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type UserRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -9,4 +15,16 @@ type CreateUserParams struct {
 	Phone   string `json:"phone"`
 	Gender  string `json:"gender"`
 	Address string `json:"address"`
+}
+
+type UserResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Role      Role      `json:"role"`
+	Phone     string    `json:"phone"`
+	Gender    string    `json:"gender"`
+	Address   string    `json:"address"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

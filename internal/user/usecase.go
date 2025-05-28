@@ -9,7 +9,11 @@ import (
 )
 
 type UseCase interface {
-	Create(params CreateUserParams) error
+	Create(params UserRequest) error
+	FindOne(id string) (*User, error)
+	FindAll() ([]User, error)
+	Update(id string, params UserRequest) error
+	Delete(id string) error
 }
 
 type userUseCase struct {
@@ -22,7 +26,7 @@ func NewUserUseCase(repo Repository) UseCase {
 	}
 }
 
-func (uc *userUseCase) Create(params CreateUserParams) error {
+func (uc *userUseCase) Create(params UserRequest) error {
 	if !IsValidRole(params.Role) {
 		return fmt.Errorf("invalid role")
 	}
@@ -59,4 +63,33 @@ func (uc *userUseCase) Create(params CreateUserParams) error {
 	}
 
 	return uc.repo.Create(&user)
+}
+
+func (uc *userUseCase) FindOne(id string) (*User, error) {
+	user, err := uc.repo.FindOne(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (uc *userUseCase) FindAll() ([]User, error) {
+	user, err := uc.repo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (uc *userUseCase) Update(id string, params UserRequest) error {
+	return nil
+}
+
+func (uc *userUseCase) Delete(id string) error {
+	if err := uc.repo.Delete(id); err != nil {
+		return err
+	}
+	return nil
 }
