@@ -84,6 +84,42 @@ func (uc *userUseCase) FindAll() ([]User, error) {
 }
 
 func (uc *userUseCase) Update(id string, params UserRequest) error {
+	user, err := uc.repo.FindOne(id)
+	if err != nil {
+		return err
+	}
+
+	if !IsValidRole(params.Role) {
+		return fmt.Errorf("invalid role")
+	}
+	if params.Role != "" && IsValidRole(params.Role) {
+		user.Role = params.Role
+	}
+
+	if params.Name != "" {
+		user.Name = params.Name
+	}
+	if params.Email != "" {
+		user.Email = params.Email
+	}
+	if params.Address != "" {
+		user.Address = params.Address
+	}
+	if params.Gender != "" {
+		user.Gender = params.Gender
+	}
+	if params.Phone != "" {
+		user.Phone = params.Phone
+	}
+
+	if err := UserIsClient(user); err != nil {
+		return err
+	}
+
+	if err := uc.repo.Update(user); err != nil {
+		return err
+	}
+
 	return nil
 }
 

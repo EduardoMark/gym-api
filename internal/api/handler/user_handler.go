@@ -88,7 +88,20 @@ func (h *UserHandler) FindAll(c *gin.Context) {
 }
 
 func (h *UserHandler) Update(c *gin.Context) {
+	id := c.Param("id")
 
+	var body userPkg.UserRequest
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body"})
+		return
+	}
+
+	if err := h.useCase.Update(id, body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "Success on update user"})
 }
 
 func (h *UserHandler) Delete(c *gin.Context) {
