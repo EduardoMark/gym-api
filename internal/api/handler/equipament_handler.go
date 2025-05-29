@@ -1,0 +1,103 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/EduardoMark/gym-api/internal/equipament"
+	"github.com/gin-gonic/gin"
+)
+
+type EquipamentHandler struct {
+	uc equipament.UseCase
+}
+
+func NewEquipamentHandler(uc equipament.UseCase) *EquipamentHandler {
+	return &EquipamentHandler{uc: uc}
+}
+
+func (h EquipamentHandler) RegisterRoutes(router *gin.RouterGroup) {
+	router.POST("/equipament", h.Create)
+	router.GET("/equipament/:id", h.FindOne)
+	router.GET("/equipament", h.FindAll)
+	router.DELETE("/equipament/:id", h.Delete)
+}
+
+func (h *EquipamentHandler) Create(c *gin.Context) {
+	var body equipament.EquipamentRequest
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.uc.Create(body); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"success": "equipament created with success"})
+}
+
+func (h *EquipamentHandler) FindOne(c *gin.Context) {
+	id := c.Param("id")
+
+	record, err := h.uc.FindOne(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := equipament.EquipamentResponse{
+		ID:              record.ID,
+		Name:            record.Name,
+		Description:     record.Description,
+		Category:        record.Category,
+		Brand:           record.Brand,
+		Model:           record.Model,
+		MaintenanceDate: record.MaintenanceDate,
+		Status:          record.Status,
+		Quantity:        record.Quantity,
+		CreatedAt:       record.CreatedAt,
+		UpdatedAt:       record.UpdatedAt,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"equipament": response})
+}
+
+func (h *EquipamentHandler) FindAll(c *gin.Context) {
+	records, err := h.uc.FindAll()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := []equipament.EquipamentResponse{}
+	for i := range records {
+		response = append(response, equipament.EquipamentResponse{
+			ID:              records[i].ID,
+			Name:            records[i].Name,
+			Description:     records[i].Description,
+			Category:        records[i].Category,
+			Brand:           records[i].Brand,
+			Model:           records[i].Model,
+			MaintenanceDate: records[i].MaintenanceDate,
+			Status:          records[i].Status,
+			Quantity:        records[i].Quantity,
+			CreatedAt:       records[i].CreatedAt,
+			UpdatedAt:       records[i].UpdatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"equipaments": response})
+}
+
+func (h *EquipamentHandler) Delete(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := h.uc.Delete(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "equipament deleted with success"})
+}
