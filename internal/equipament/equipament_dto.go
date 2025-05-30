@@ -14,7 +14,7 @@ type EquipamentRequest struct {
 	Model           string     `json:"model"`
 	MaintenanceDate *time.Time `json:"maintenance_date"`
 	Status          Status     `json:"status"`
-	Quantity        int        `json:"quantidade"`
+	Quantity        int        `json:"quantity"`
 }
 
 type EquipamentResponse struct {
@@ -26,7 +26,7 @@ type EquipamentResponse struct {
 	Model           string     `json:"model"`
 	MaintenanceDate *time.Time `json:"maintenance_date"`
 	Status          Status     `json:"status"`
-	Quantity        int        `json:"quantidade"`
+	Quantity        int        `json:"quantity"`
 	CreatedAt       time.Time  `json:"created_at"`
 	UpdatedAt       time.Time  `json:"updated_at"`
 }

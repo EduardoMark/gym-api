@@ -19,6 +19,7 @@ func (h EquipamentHandler) RegisterRoutes(router *gin.RouterGroup) {
 	router.POST("/equipament", h.Create)
 	router.GET("/equipament/:id", h.FindOne)
 	router.GET("/equipament", h.FindAll)
+	router.PUT("/equipament/:id", h.Update)
 	router.DELETE("/equipament/:id", h.Delete)
 }
 
@@ -89,6 +90,23 @@ func (h *EquipamentHandler) FindAll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"equipaments": response})
+}
+
+func (h *EquipamentHandler) Update(c *gin.Context) {
+	id := c.Param("id")
+	var body equipament.EquipamentRequest
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.uc.Update(id, body); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "user updated with success"})
 }
 
 func (h *EquipamentHandler) Delete(c *gin.Context) {
