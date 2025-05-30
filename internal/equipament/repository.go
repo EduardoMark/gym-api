@@ -6,6 +6,7 @@ type Repository interface {
 	Create(equipament *Equipament) error
 	FindOne(id string) (*Equipament, error)
 	FindAll() ([]Equipament, error)
+	Update(equipament *Equipament) error
 	Delete(id string) error
 }
 
@@ -40,6 +41,13 @@ func (r *equipamentRepository) FindAll() ([]Equipament, error) {
 		return nil, err
 	}
 	return equipaments, nil
+}
+
+func (r *equipamentRepository) Update(equipament *Equipament) error {
+	if err := r.db.Updates(equipament).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *equipamentRepository) Delete(id string) error {

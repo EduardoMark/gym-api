@@ -30,7 +30,7 @@ type Equipament struct {
 	Model           string     `json:"model" gorm:"not null"`
 	MaintenanceDate *time.Time `json:"maintenance_date"`
 	Status          Status     `json:"status" gorm:"not null"`
-	Quantity        int        `json:"quantidade" gorm:"not null;default:1"`
+	Quantity        int        `json:"quantity" gorm:"not null;default:1"`
 	CreatedAt       time.Time  `json:"created_at"`
 	UpdatedAt       time.Time  `json:"updated_at"`
 }
