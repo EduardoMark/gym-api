@@ -72,21 +72,21 @@ func (h *EquipamentHandler) FindAll(c *gin.Context) {
 		return
 	}
 
-	response := []equipament.EquipamentResponse{}
-	for i := range records {
-		response = append(response, equipament.EquipamentResponse{
-			ID:              records[i].ID,
-			Name:            records[i].Name,
-			Description:     records[i].Description,
-			Category:        records[i].Category,
-			Brand:           records[i].Brand,
-			Model:           records[i].Model,
-			MaintenanceDate: records[i].MaintenanceDate,
-			Status:          records[i].Status,
-			Quantity:        records[i].Quantity,
-			CreatedAt:       records[i].CreatedAt,
-			UpdatedAt:       records[i].UpdatedAt,
-		})
+	response := make([]equipament.EquipamentResponse, len(records))
+	for i, record := range records {
+		response[i] = equipament.EquipamentResponse{
+			ID:              record.ID,
+			Name:            record.Name,
+			Description:     record.Description,
+			Category:        record.Category,
+			Brand:           record.Brand,
+			Model:           record.Model,
+			MaintenanceDate: record.MaintenanceDate,
+			Status:          record.Status,
+			Quantity:        record.Quantity,
+			CreatedAt:       record.CreatedAt,
+			UpdatedAt:       record.UpdatedAt,
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"equipaments": response})

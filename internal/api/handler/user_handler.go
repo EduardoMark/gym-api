@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/EduardoMark/gym-api/internal/user"
-	userPkg "github.com/EduardoMark/gym-api/internal/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,13 +26,13 @@ func (h *UserHandler) RegisterRoutes(router *gin.RouterGroup) {
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
-	var user userPkg.UserRequest
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var body user.UserRequest
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	if err := h.useCase.Create(user); err != nil {
+	if err := h.useCase.Create(body); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -44,44 +43,44 @@ func (h *UserHandler) Create(c *gin.Context) {
 func (h *UserHandler) FindOne(c *gin.Context) {
 	id := c.Param("id")
 
-	user, err := h.useCase.FindOne(id)
+	record, err := h.useCase.FindOne(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": userPkg.UserResponse{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		Phone:     user.Phone,
-		Gender:    user.Gender,
-		Address:   user.Address,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+	c.JSON(http.StatusOK, gin.H{"user": user.UserResponse{
+		ID:        record.ID,
+		Name:      record.Name,
+		Email:     record.Email,
+		Role:      record.Role,
+		Phone:     record.Phone,
+		Gender:    record.Gender,
+		Address:   record.Address,
+		CreatedAt: record.CreatedAt,
+		UpdatedAt: record.UpdatedAt,
 	}})
 }
 
 func (h *UserHandler) FindAll(c *gin.Context) {
-	users, err := h.useCase.FindAll()
+	records, err := h.useCase.FindAll()
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	response := []userPkg.UserResponse{}
-	for i := range users {
-		response = append(response, userPkg.UserResponse{
-			ID:        users[i].ID,
-			Name:      users[i].Name,
-			Email:     users[i].Email,
-			Role:      users[i].Role,
-			Phone:     users[i].Phone,
-			Gender:    users[i].Gender,
-			Address:   users[i].Address,
-			CreatedAt: users[i].CreatedAt,
-			UpdatedAt: users[i].UpdatedAt,
-		})
+	response := make([]user.UserResponse, len(records))
+	for i, record := range records {
+		response[i] = user.UserResponse{
+			ID:        record.ID,
+			Name:      record.Name,
+			Email:     record.Email,
+			Role:      record.Role,
+			Phone:     record.Phone,
+			Gender:    record.Gender,
+			Address:   record.Address,
+			CreatedAt: record.CreatedAt,
+			UpdatedAt: record.UpdatedAt,
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"users": response})
@@ -90,7 +89,7 @@ func (h *UserHandler) FindAll(c *gin.Context) {
 func (h *UserHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 
-	var body userPkg.UserRequest
+	var body user.UserRequest
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body"})
 		return
