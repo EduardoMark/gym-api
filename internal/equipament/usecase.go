@@ -1,6 +1,11 @@
 package equipament
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type UseCase interface {
 	Create(params EquipamentRequest) error
@@ -28,6 +33,7 @@ func (uc *equipamentUseCase) Create(params EquipamentRequest) error {
 	}
 
 	equipament := Equipament{
+		ID:              uuid.New(),
 		Name:            params.Name,
 		Description:     params.Description,
 		Category:        params.Category,
@@ -36,6 +42,8 @@ func (uc *equipamentUseCase) Create(params EquipamentRequest) error {
 		MaintenanceDate: params.MaintenanceDate,
 		Status:          params.Status,
 		Quantity:        params.Quantity,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 
 	if err := uc.repo.Create(&equipament); err != nil {

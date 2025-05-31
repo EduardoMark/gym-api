@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/EduardoMark/gym-api/internal/api/handler"
 	"github.com/EduardoMark/gym-api/internal/equipament"
+	"github.com/EduardoMark/gym-api/internal/payment/plan"
 	"github.com/EduardoMark/gym-api/internal/user"
 	"github.com/EduardoMark/gym-api/pkg/config"
 	"github.com/EduardoMark/gym-api/pkg/database"
@@ -12,7 +13,7 @@ import (
 func main() {
 	cfg := config.LoadEnv()
 	database.ConnectPostgres(*cfg)
-	database.AutoMigrate(&user.User{}, &equipament.Equipament{})
+	database.AutoMigrate(&user.User{}, &equipament.Equipament{}, &plan.Plan{})
 
 	router := gin.Default()
 	apiV1 := router.Group("/api/v1")
@@ -26,6 +27,11 @@ func main() {
 	equipamentUsecase := equipament.NewEquipamentUseCase(equipamentRepo)
 	equipamentHandler := handler.NewEquipamentHandler(equipamentUsecase)
 	equipamentHandler.RegisterRoutes(apiV1)
+
+	planRepo := plan.NewRepository(database.DB)
+	planUseCase := plan.NewPlanUseCase(planRepo)
+	planHandler := handler.NewPlanHandler(planUseCase)
+	planHandler.RegisterRoutes(apiV1)
 
 	router.Run(":8080")
 }
