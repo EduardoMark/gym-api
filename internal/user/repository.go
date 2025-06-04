@@ -7,6 +7,7 @@ import (
 type Repository interface {
 	Create(user *User) error
 	FindOne(id string) (*User, error)
+	FindByEmail(email string) (*User, error)
 	FindAll() ([]User, error)
 	Update(user *User) error
 	Delete(id string) error
@@ -33,6 +34,16 @@ func (r *userRepository) FindOne(id string) (*User, error) {
 	var user *User
 
 	if err := r.db.Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *userRepository) FindByEmail(email string) (*User, error) {
+	var user *User
+
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
 		return nil, err
 	}
 

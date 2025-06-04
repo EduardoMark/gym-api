@@ -15,6 +15,7 @@ type Env struct {
 	DBPassword string
 	DBName     string
 	DBTimezone string
+	JWTSecret  string
 }
 
 func LoadEnv() *Env {
@@ -30,6 +31,7 @@ func LoadEnv() *Env {
 		DBPassword: getEnv("DB_PASSWORD", ""),
 		DBName:     getEnv("DB_NAME", "gymapi"),
 		DBTimezone: getEnv("DB_TIMEZONE", "America/Sao_Paulo"),
+		JWTSecret:  getEnv("JWT_SECRET", "secret_key"),
 	}
 }
 

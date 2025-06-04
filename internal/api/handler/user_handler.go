@@ -19,26 +19,10 @@ func NewUserHandler(uc user.UseCase) *UserHandler {
 }
 
 func (h *UserHandler) RegisterRoutes(router *gin.RouterGroup) {
-	router.POST("/users", h.Create)
 	router.GET("/users/:id", h.FindOne)
 	router.GET("/users", h.FindAll)
 	router.PUT("/users/:id", h.Update)
 	router.DELETE("/users/:id", h.Delete)
-}
-
-func (h *UserHandler) Create(c *gin.Context) {
-	var user userPkg.UserRequest
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return
-	}
-
-	if err := h.useCase.Create(user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
 func (h *UserHandler) FindOne(c *gin.Context) {

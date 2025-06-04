@@ -1,14 +1,17 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/EduardoMark/gym-api/pkg/auth"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UseCase interface {
+	Login(params UserLoginRequest) (string, error)
 	Create(params UserRequest) error
 	FindOne(id string) (*User, error)
 	FindAll() ([]User, error)
@@ -18,12 +21,37 @@ type UseCase interface {
 
 type userUseCase struct {
 	repo Repository
+	auth auth.Authorizer
 }
 
-func NewUserUseCase(repo Repository) UseCase {
+func NewUserUseCase(repo Repository, auth auth.Authorizer) UseCase {
 	return &userUseCase{
 		repo: repo,
+		auth: auth,
 	}
+}
+
+func (uc *userUseCase) Login(params UserLoginRequest) (string, error) {
+	if params.Email == "" || params.Password == "" {
+		return "", fmt.Errorf("all fields is required")
+	}
+
+	record, err := uc.repo.FindByEmail(params.Email)
+	if err != nil {
+		return "", errors.New("invalid credentials")
+	}
+
+	isValid := bcrypt.CompareHashAndPassword([]byte(record.Password), []byte(params.Password))
+	if isValid != nil {
+		return "", errors.New("invalid credentials")
+	}
+
+	token, err := uc.auth.GenerateToken(record.Name, string(record.Role))
+	if err != nil {
+		return "", errors.New("error on generating token")
+	}
+
+	return token, nil
 }
 
 func (uc *userUseCase) Create(params UserRequest) error {
